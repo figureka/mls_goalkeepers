@@ -22,16 +22,6 @@ salaries <- bind_rows(salaries2015, salaries2016, salaries2017, salaries2018, sa
 names(salaries) <- tolower(names(salaries))
 salaries$n[2] <- 26
 
-# League Table 2015-2019
-table2015 <- read_csv('table2015.csv') %>% mutate(season = 2015)
-table2016 <- read_csv('table2016.csv') %>% mutate(season = 2016)
-table2017 <- read_csv('table2017.csv') %>% mutate(season = 2017)
-table2018 <- read_csv('table2018.csv') %>% mutate(season = 2018)
-table2019 <- read_csv('table2019.csv') %>% mutate(season = 2019)
-table <- bind_rows(table2015, table2016, table2017, table2018, table2019)
-names(table) <- tolower(names(table))
-names(table)[2] <- 'team'
-
 #### GK xG and compensation ####
 # G-xG vs. compensation
 left_join(gk_table, salaries %>% select(team, season, totalguar), by = c('team', 'season')) %>%
@@ -97,19 +87,4 @@ gk_table2 <- gk_table %>% filter(season %in% c(2015:2019)) %>%
   filter(!is.na(comp_k))
 cor(gk_table2$comp_k, -gk_table2$G_xG)
     
-    
-gk_table %>%
-  filter(season %in% c(2015:2019)) %>% filter(last != 'Howard') %>%
-  ggplot(aes(x = comp_k, y = -G_xG, color = factor(season))) +
-  geom_point() +
-  geom_text_repel(aes(label = ifelse(comp_k > 475, plotnames,
-                                     ifelse(-G_xG >5 | -G_xG < -6, plotnames,NA))),
-                  size = 3)+
-  geom_hline(aes(yintercept = 0), alpha = .5, linetype = 'dashed', size = 1)+
-  theme_classic()+
-  theme(axis.text.x = element_text(face = 'bold'),
-        axis.text.y = element_text(face = 'bold'))+
-  labs(title = 'Goals Allowed - xG Faced vs. GK Compensation',
-       y = 'G - xG',
-       x = 'GK compensation (thousands of dollars)',
-       color = 'Season')
+
